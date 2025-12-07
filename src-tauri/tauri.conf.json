@@ -14,11 +14,32 @@
       {
         "title": "group-app",
         "width": 800,
-        "height": 600
+        "height": 900,
+        "label": "main"
       }
     ],
     "security": {
-      "csp": null
+      "csp": null,
+      "dangerousDisableAssetCspModification": false,
+      "capabilities": [
+        {
+          "identifier": "main-capability",
+          "windows": [
+            "main",
+            "result"
+          ],
+          "permissions": [
+            "core:webview:allow-create-webview-window",
+            "core:window:allow-get-all-windows",
+            "core:window:allow-show",
+            "core:window:allow-set-focus",
+            "core:window:allow-hide",
+            "core:window:allow-close",
+            "core:event:allow-emit",
+            "core:event:allow-listen"
+          ]
+        }
+      ]
     }
   },
   "bundle": {
