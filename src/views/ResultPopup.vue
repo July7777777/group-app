@@ -6,6 +6,7 @@
         <p>总: {{ totalPeople }}人</p>
         <p>分: {{ groupCount }}组</p>
         <p>每组: {{ peoplePerGroup }}人</p>
+        <p class="tip-text">提示：左键点击加分，右键点击减分</p>
       </div>
     </div>
 
@@ -14,10 +15,12 @@
         v-for="group in groups"
         :key="group.id"
         class="group-card"
+        @click="addPoint(group.id)"
+        @contextmenu.prevent="subtractPoint(group.id)"
       >
         <div class="group-header">
           <span>{{ group.id }}组</span>
-          <span class="member-count">({{ group.members.length }}人)</span>
+          <span class="member-count">({{ group.points }}分)</span>
         </div>
         <ul class="member-list">
           <li
@@ -37,12 +40,12 @@
   import { ref, onMounted, onUnmounted } from 'vue';
   import { useRoute } from 'vue-router';
   import { listen } from '@tauri-apps/api/event';
-  // import { getCurrentWindow } from '@tauri-apps/api/window';
 
   // 定义分组类型
   interface Group {
     id: number;
     members: string[];
+    points: number;
   }
 
   // 获取路由信息
@@ -57,12 +60,36 @@
 
   let unlisten: (() => void) | null = null;
 
+  // 给指定组加一分
+  const addPoint = (groupId: number) => {
+    const groupIndex = groups.value.findIndex(g => g.id === groupId);
+    if (groupIndex !== -1) {
+      groups.value[groupIndex].points += 1;
+      console.log(`第${groupId}组积分+1，当前积分: ${groups.value[groupIndex].points}`);
+    }
+  };
+
+  // 给指定组减一分（撤销）
+  const subtractPoint = (groupId: number) => {
+    const groupIndex = groups.value.findIndex(g => g.id === groupId);
+    if (groupIndex !== -1 && groups.value[groupIndex].points > 0) {
+      groups.value[groupIndex].points -= 1;
+      console.log(`第${groupId}组积分-1，当前积分: ${groups.value[groupIndex].points}`);
+    } else if (groupIndex !== -1) {
+      console.log(`第${groupId}组积分已为0，无法再减分`);
+    }
+  };
+
   // 处理分组数据
   const handleGroupData = (data: any) => {
     console.log('接收到分组数据:', data);
 
     if (data.groups) {
-      groups.value = data.groups;
+      // 确保每个组都有points字段，如果没有则默认为0
+      groups.value = data.groups.map((group: any) => ({
+        ...group,
+        points: group.points !== undefined ? group.points : 0  // 修复：明确检查points是否存在
+      }));
     }
     if (data.peoplePerGroup) {
       peoplePerGroup.value = data.peoplePerGroup;
@@ -87,7 +114,6 @@
     try {
       const dataParam = route.query.data as string;
       if (dataParam) {
-        // 解码Base64数据
         const decodedData = decodeURIComponent(dataParam);
         const groupData = JSON.parse(decodedData);
 
@@ -118,33 +144,35 @@
     }
   });
 
-  // 组件卸载时取消监听
+  // 组件卸载时取消监听 - 使用更安全的方式
   onUnmounted(() => {
     if (unlisten) {
-      unlisten();
-      console.log('分组数据监听器已取消');
+      try {
+        unlisten();
+        console.log('分组数据监听器已取消');
+      } catch (error) {
+        console.warn('取消监听时出现错误，可能是权限问题:', error);
+        // 忽略取消监听时的错误，不影响应用功能
+      }
     }
   });
-
-  // 关闭窗口
-  // const closeWindow = async () => {
-  //   try {
-  //     const win = getCurrentWindow();
-  //     await win.close();
-  //   } catch (error) {
-  //     console.error('关闭窗口失败:', error);
-  //   }
-  // };
 </script>
 
 <style scoped>
   .group-result-page {
     padding: 20px;
     background: linear-gradient(135deg, #667eea 0%, #764ba200 100%);
-
     min-height: 100vh;
     color: white;
     font-family: Arial, sans-serif;
+    user-select: none;
+    /* 防止文字被选择 */
+    -webkit-user-select: none;
+    /* Safari 支持 */
+    -moz-user-select: none;
+    /* Firefox 支持 */
+    -ms-user-select: none;
+    /* IE/Edge 支持 */
   }
 
   .result-header {
@@ -175,6 +203,13 @@
     font-weight: 600;
   }
 
+  .tip-text {
+    font-size: 0.8em;
+    color: #ccc;
+    font-style: italic;
+    margin-top: 10px;
+  }
+
   .groups-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -196,13 +231,11 @@
     backdrop-filter: blur(10px);
   }
 
-
-
   .group-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
     padding-bottom: 10px;
     border-bottom: 2px solid #c1c1c1;
   }
@@ -214,7 +247,7 @@
   }
 
   .member-count {
-    color: #666;
+    color: #14b51c;
     font-size: 0.9em;
     font-weight: 600;
   }

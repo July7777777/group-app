@@ -26,7 +26,7 @@
           v-model.number="groupCount"
         >
           <option
-            v-for="n in Math.floor(totalPeople / 2)"
+            v-for="n in validGroupOptions"
             :key="n"
             :value="n"
           >{{ n }}组</option>
@@ -183,11 +183,12 @@
   interface Group {
     id: number;
     members: string[];
+    points: number;
   }
 
   // 响应式数据
 
-  const groupCount = ref(4);
+  const groupCount = ref(4); // 初始值设为4，但需要根据实际情况调整
   const peopleNames = ref<string[]>([]);
   const waitingForGroup = ref<string[]>([]);
   const CacheGroups = ref<string[]>([]);
@@ -207,6 +208,24 @@
   // 剩余人数（需要分配到某些组中）
   const remainingPeople = computed(() => {
     return totalPeople.value % groupCount.value;
+  });
+
+  // 新增：合理的分组数选项
+  const validGroupOptions = computed(() => {
+    const total = totalPeople.value;
+    if (total < 2) return []; // 至少需要2人才能分组
+
+    const options = [];
+    // 从2组开始，最多到总人数的一半（确保每组至少有2人）
+    for (let n = 2; n <= Math.floor(total / 2); n++) {
+      // 检查分组是否合理：每组人数至少为2，且剩余人数不超过组数
+      const groupSize = Math.floor(total / n);
+
+      if (groupSize >= 2) {
+        options.push(n);
+      }
+    }
+    return options;
   });
 
   // 待分组人员列表（未分组时显示所有人员）
@@ -236,25 +255,26 @@
     try {
       const appData = await invoke('load_app_data') as any;
       console.log(appData)
-      // totalPeople = appData.total_people;
       if (appData.cache_groups) {
         CacheGroups.value = appData.cache_groups;
         waitingForGroup.value = appData.waiting_groups;
       }
 
       // 根据总人数自动设置合适的组数
-      // if (totalPeople.value === 8) {
-      //   groupCount.value = 4;
-      // } else if (totalPeople.value === 6) {
-      //   groupCount.value = 3;
-      // } else if (totalPeople.value === 4) {
-      //   groupCount.value = 2;
-      // }
+      const total = totalPeople.value;
+      if (total >= 8) {
+        groupCount.value = 4; // 8人分4组，每组2人
+      } else if (total >= 6) {
+        groupCount.value = 3; // 6人分3组，每组2人
+      } else if (total >= 4) {
+        groupCount.value = 2; // 4人分2组，每组2人
+      } else {
+        groupCount.value = 2; // 默认2组
+      }
 
       console.log('数据加载成功');
     } catch (error) {
       console.error('加载数据失败:', error);
-      // 如果加载失败，使用默认初始化
       initializeNames();
     }
   };
@@ -275,7 +295,8 @@
 
       newGroups.push({
         id: i + 1,
-        members: groupMembers
+        members: groupMembers,
+        points: 0  // 新增：确保每个组都有初始分值为0
       });
     }
 
