@@ -6,7 +6,6 @@
         <p>总: {{ totalPeople }}人</p>
         <p>分: {{ groupCount }}组</p>
         <p>每组: {{ peoplePerGroup }}人</p>
-        <p v-if="remainingPeople > 0">有{{ remainingPeople }}组多1人</p>
       </div>
     </div>
 
@@ -89,7 +88,7 @@
       const dataParam = route.query.data as string;
       if (dataParam) {
         // 解码Base64数据
-        const decodedData = atob(dataParam);
+        const decodedData = decodeURIComponent(dataParam);
         const groupData = JSON.parse(decodedData);
 
         console.log('从URL参数解析的分组数据:', groupData);

@@ -385,11 +385,11 @@
         remainingPeople: remainingPeople.value
       };
 
-      // 将数据编码为Base64，避免URL长度限制和特殊字符问题
-      const encodedData = btoa(JSON.stringify(groupData));
+      // 使用 encodeURIComponent 替代 btoa 来处理Unicode字符
+      const encodedData = encodeURIComponent(JSON.stringify(groupData));
 
       // 构建包含数据的URL
-      const resultUrl = `#/result?data=${encodeURIComponent(encodedData)}`;
+      const resultUrl = `#/result?data=${encodedData}`;
 
       // 先检查是否已经存在结果窗口
       const existingWindows = await getAllWebviewWindows();
@@ -441,7 +441,6 @@
       console.error('创建分组结果弹窗时发生错误:', error);
     }
   };
-
 </script>
 
 
