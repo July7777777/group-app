@@ -4,10 +4,12 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "tauri dev",
-    "build": "tauri build",
-    "build-debug": "tauri build --debug",
-    "tauri": "tauri"
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "t-dev": "tauri dev",
+    "tb": "tauri build"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.9.1",
