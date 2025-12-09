@@ -1,13 +1,7 @@
 <template>
   <div class="group-result-page">
     <div class="result-header">
-      <h1>分组结果</h1>
-      <div class="result-info">
-        <p>总: {{ totalPeople }}人</p>
-        <p>分: {{ groupCount }}组</p>
-        <p>每组: {{ peoplePerGroup }}人</p>
-        <p class="tip-text">提示：左键点击加分，右键点击减分</p>
-      </div>
+      <div class="tip-text">提示：左键点击加分，右键点击减分</div>
     </div>
 
     <div class="groups-container">
@@ -160,10 +154,12 @@
 
 <style scoped>
   .group-result-page {
-    padding: 20px;
+    padding: 13px;
+    padding-top: 0;
+    /* background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); */
     background: linear-gradient(135deg, #667eea 0%, #764ba200 100%);
     min-height: 100vh;
-    color: white;
+    color: #ffffff;
     font-family: Arial, sans-serif;
     user-select: none;
     /* 防止文字被选择 */
@@ -176,80 +172,59 @@
   }
 
   .result-header {
+    /* font-size: 12px; */
     text-align: center;
-    margin-bottom: 30px;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 20px;
-    border-radius: 10px;
-    backdrop-filter: blur(10px);
-  }
-
-  .result-header h1 {
-    margin: 0 0 15px 0;
-    font-size: 2em;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  }
-
-  .result-info {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    font-size: 1em;
-  }
-
-  .result-info p {
-    margin: 5px 0;
-    font-weight: 600;
   }
 
   .tip-text {
-    font-size: 0.8em;
-    color: #ccc;
+    padding: 10px 0;
+    font-size: 0.6em;
+    font-weight: 600;
+    color: #e0e0e0;
     font-style: italic;
-    margin-top: 10px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   }
 
   .groups-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 20px;
+    gap: 18px;
     margin-bottom: 30px;
   }
 
   .group-card {
-    width: 100px;
-    color: #333;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 77px;
+    color: #ffffff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 10px 15px 10px 15px;
-    /* height: 320px; */
-    /* overflow-y: auto; */
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    padding: 15px;
     backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .group-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #c1c1c1;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
   }
 
-  .group-header h3 {
-    margin: 0;
+  .group-header span:first-child {
     color: #ffffff;
-    font-size: 1.2em;
+    font-size: 0.9em;
+    font-weight: 700;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
   }
 
   .member-count {
-    color: #14b51c;
+    color: #62e367;
     font-size: 0.9em;
-    font-weight: 600;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   }
 
   .member-list {
@@ -262,10 +237,16 @@
     padding: 8px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     transition: background-color 0.2s ease;
-
-    color: #fff;
+    color: #ffffff;
     text-align: center;
     font-size: 0.95em;
+    font-weight: 500;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .member-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
   }
 
   @media (max-width: 120px) {

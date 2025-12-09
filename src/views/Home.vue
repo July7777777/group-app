@@ -440,8 +440,8 @@
       const webview = new WebviewWindow('result', {
         url: resultUrl,
         title: `分组结果`,
-        width: 308,
-        height: 700,
+        width: 260,
+        height: 375,
         decorations: true,
         center: false,
         resizable: true,
